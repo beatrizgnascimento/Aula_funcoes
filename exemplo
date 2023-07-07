@@ -1,0 +1,18 @@
+#include <stdio.h>
+
+void altera(int n);
+int main()
+{
+  int x = 2;
+
+  printf("antes = %d\n", x); //vai printar 2
+  altera(x);
+  printf("depois: %d\n", x); //vai printar 2, pois tem uma cópia
+
+  return 0;
+}
+
+void altera(int x)
+{
+  x = 4;
+}

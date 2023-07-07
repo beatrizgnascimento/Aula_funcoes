@@ -1,0 +1,308 @@
+Ponteiros
+
+int *p;
+- Devem ser sempre inicializados antes de serem usados
+Ex: apontar para lugar nenhum
+int *p = NULL;
+- Para apontar para uma variável usar & antes dela
+
+%p exibe endereço de memória
+
+Operadores
+& - unário que devolve o ENDEREÇO de memória
+int a = 2; //declara inteiro a
+int *x = &a; //faz o ponteiro apontar para o inteiro a
+* - complemento de &. Devolve o VALOR armazenado no endereço da variável
+
+Exemplo:
+#include <stdio.h>
+int main()
+{
+  int a = 2;
+  int *x = NULL;
+
+  x = &a; //ponteiro x aponta para a
+  //%p imprime endereco de memoria
+  printf("Endereco de A: %p\n", &a); //0061FF1C
+  printf("X aponta para: %p\n", x); //0061FF1C
+  printf("Endereco de X: %p\n", &x); //0061FF18
+  printf("Conteudo de X: %d\n", *x); //2
+
+  return 0;
+}
+
+Memória
+
+Linha 4
+Endereço: 28FF18
+Variável: int a
+valor: 2
+
+Linha 5
+Endereço: 28FF1C
+Variável: int *x
+valor: NULL
+
+Linha 7 -
+Ender: 28FF1C
+Variável: int*x
+Valor: 28FF18
+
+Atribuição de ponteiros
+- Atribuição de endereço: so pode receber o endereco de memoria de uma variavel do mesmo tipo
+
+#include <stdio.h>
+int main()
+{
+  int a = 2;
+  int *x = NULL, *y = NULL;
+
+  x = &a; //x aponta para a
+  y = x; // y aponta para x que aponta para a
+
+  printf("Endereco de A: %p\n", &a); //0061FF1C
+  printf("X aponta para: %p\n", x); //0061FF1C
+  printf("Endereco de X: %p\n", &x); //0061FF18
+  printf("Conteudo de X: %d\n", *x); //2
+  printf("Conteudo de Y: %d\n", *y);
+  printf("Endereço de Y: %p\n", &y);
+
+  return 0;
+}
+
+Atribuição de conteudo: O ponteiro aponta para uma variável e o operador de atribuição é usado para atribuir ou modificar o valor da variável
+
+
+Comparação entre ponteiros
+== e != são usados para saber se os ponteiros apontam para o mesmo lugar ou se o conteúdo é o mesmo
+int a = 2;
+int b = 2;
+int *x = NULL, *y = NULL;
+
+x = &a;
+y = &a;
+z = &b;
+
+if(x == y) -- VERDADEIRO
+if(*x == *y) -- V
+if(*x == *z) --V
+if(x == z) -- FALSO
+
+
+<, >, <=, >= são usados para saber se um ponteiro aponta para uma região mais adiante na memória que outro
+
+Operações aritmeticas de ponteiros
+- Inteiros podem ser adicionados ou subtraídos de ponteiros
+- Um ponteiro pode ser subtraído de outro ponteiro
+	- Somente quando ambos os ponteiros apontam para o mesmo array
+
+Incremento / Decremento
+int v[5];
+v[0]   v[1]  v[2]
+3000   3004  3008
+
+Apontando para v[0] de v
+int *p = v;
+ou
+int *p = &v[0];
+
+p = p + 2 ou p+= 2 //ira apontar para v[2]
+
+Subtração de ponteiros
+*p = v[0]
+*q = v[2]
+int x = p - q;
+= 3008 - 3000 = 2 //separados entre si por 2 casas
+
+A aritmética de ponteiros é indefinida a menos que seja executada sobre um vetor
+Não é possível garantir que duas variáveis sejam armazenadas sequencialmente na memória sem usar um vetor
+
+----------------------------------------------------------------------------------------------------------
+
+Alocação dinâmica de memória
+- Usado para saber quanto de memória um programa irá precisar
+- Para isso devemos declarar um array junto com ponteiros, que irão guardar o endereço de um dado na memória
+- Criação de arrays em tempo de execução, alocar memória para novos arrays quando o progrma está sendo executado e evitar desperdício de memória
+
+Ex:
+int *n = NULL
+Alocando 5 posições de memória int
+O computador pode nos devolver posições de memória de #123 a #127para armazenar os dados. O ponteiro passa a se comportar como um array de tamanho 5, ou seja int n[5].
+
+Funções para alocação de memória
+- Usar a biblioteca stdlib.h
+
+Sizeof()
+- Auxilia as demais funções na alocação de memória
+-Deve-se levar em conta o tamanho do dado alocado para a alocação. A memória do tipo int é diferente do tipo float
+- O sizeof é usado para saber o número de bytes necessários para alocar um único elemento de determinado tipo
+-Tamanho em bytes para alocar aquele tipo de dado
+
+sizeof nome_variavel
+ou
+sizeof (nome_tipo)
+
+Malloc()
+- Alocar memória durante a execução do programa
+- Ela faz o pedido de memória ao computador e retorna a um ponteiro com endereço do início do espaço de memória alocado
+
+void*malloc(unsigned int num);
+
+num: tamanho do espaço de memória a ser alocado
+retorna NULL no caso de erro ou um ponteiro para o início do bloco de memória alocado
+
+O bloco de memória é alocado e manipulado como um array e deve ser conbvertido via typecast para o tipo do ponteiro
+
+#include <stdio.h>
+#include <stdlib.h>
+int main(){
+ int *p;   
+
+ p = (int *) malloc(5*sizeof(int));
+                    5 posicoes de inteiros
+
+//funcao sizeof acima retorna 4, pois sao os numeros de bytes do tipo int na memoria. Logo, são alocados 20 bytes(50 * 4)
+//funcao malloc retorna um ponteiro genérico que é convertido em ponteiro com typecast (int*)
+//ponteiro p passa a ser tratado como um array p[i]
+
+if(p == NULL) // Sempre usar teste de memoria antes
+{
+	printf("Memoria insuficiente");
+	exit(1);
+}
+ int i;
+ for (i=0; i<5; i++){
+ printf(“Digite o valor da posicao %d: ”,i);
+ scanf(“%d”,&p[i]);
+ }
+ return 0;
+}
+
+
+Calloc()
+- Faz a mesma coisa de Malloc(), a diferença é a sintaxe
+ recebe num (número de elementos do array a ser alocado) e size (tamanho wm bytes de cada elemento)
+
+void* calloc(num, tam)
+
+Malloc vs Calloc
+
+int main(){
+
+ //alocação com malloc
+ int *p;
+ p = (int *) malloc(50*sizeof(int));
+ if(p == NULL){
+printf(“Erro: Memoria Insuficiente!\n”);
+ }
+
+ //alocação com calloc
+ int *p1;
+ p1 = (int *) calloc(50,sizeof(int));
+ if(p1 == NULL){
+printf(“Erro: Memoria Insuficiente!\n”);
+ }
+
+
+Free()
+- Para liberar um bloco de memória previamente alocado
+-Permite devolver memória ao s.o
+void free (void*p);
+
+int *p (int*)malloc( 5 * sizeof(int) );
+free(p); - liberação de memória
+return 0;
+
+Alocação dinâmica de structs
+- Pode alocar 1 struct ou uma array de struct
+- Um ponteiro para struct recebe a função malloc()
+-O operador seta é empregado para acessar os membros da struct
+- Função free para liberar memória
+
+Para alocar uma única struct
+typedef struct cadastro
+{
+  char nome[50];
+  int idade;
+}
+int main()
+{
+  cadastro *c = (cadastro*)malloc(sizeof(cadastro));
+  //ponteiro struct recebe malloc
+
+  strcpy(c->nome, "Maria);
+  //operador seta para acessar o membro da struct nome (precisa usar strcmp pois é string)
+  
+  c->idade = 25;
+  //operador seta para acessar o membro idade da struct
+
+  free(c);
+  return 0;
+}
+
+Alocação de arrays de estruturas
+-Um ponteiro para struct recebe a função malloc
+- Operador ponto é usado para acessar membros da struct
+-Operador colchetes é usado para acessar a posição do array
+-Função free para liberar memória
+
+typedef struct cadastro...
+int main()
+{
+  cadastro *c = (cadastro*)malloc(10 * sizeof(cadastro));
+  //ponteiro recebe a struct cadastro
+
+  strcpy(c[0].nome, "Maria");
+  . usado para acessar membros da struct e [] para acessar a posição desejada do array
+
+  c[0].idade = 25;
+
+  strcpy(c[1].nome, "Joao");
+  c[1].idade = 27;
+
+  free(c);
+
+  return 0;
+}
+
+Alocação dinâmica de matrizes
+- Usa ponteiro de ponteiro
+-Para cada dimensão extra, declara-se a variável com um * a mais
+
+tipo **matriz;
+primeiro nível do ponteiro está um array de ponteiros representando linhas
+int **p = (int**)malloc(linhas * sizeof(int *));
+
+Para cada posição do array de ponteiros, aloca-se um array de inteiros, representando as colunas, as quais conterão os dados
+Essa tarefa é realizada em um laço for
+
+for(i = 0; i < linhas; i++)
+{
+  p[i] = (int *)malloc(colunas * sizeof(int));
+}
+
+juntando os dois:
+int **p = (int**)malloc(linhas * sizeof(int *));
+for(i = 0; i < linhas; i++)
+{
+  p[i] = (int *)malloc(colunas * sizeof(int));
+}
+for(i = 0; i < L; i++)
+{
+  free(p[i]); //desaloca colunas
+}
+free(p); //desaloca linhas
+
+Melhor forma de fazer para não gastar memória: Usar um único bloco de memória e rearranjar os ponteiros
+
+int **p = (int**)malloc(linhas * sizeof(int *));
+
+p[0] = (int*)malloc(linhas * colunas * sizeof(int));
+
+for(i = 1; i < linhas; i++)
+{
+  p[i] = p[i - 1] + colunas;
+}
+
+free(p[0]);
+free(p);
